@@ -1,36 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Merriweather:wght@300;400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   * { box-sizing: border-box; }
-  body { @apply antialiased; }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  html { scroll-behavior: smooth; }
+  body { 
+    @apply antialiased bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950;
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 { 
+    @apply font-display font-semibold;
+    font-family: 'Merriweather', Georgia, serif;
+  }
+  h1 { @apply text-4xl; }
+  h2 { @apply text-3xl; }
+  h3 { @apply text-2xl; }
+  
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-600 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-500; }
+  ::-webkit-scrollbar-thumb { @apply bg-civic-300 dark:bg-civic-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-civic-400 dark:bg-civic-600; }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 bg-memphis-500 hover:bg-memphis-600 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-civic-600 to-civic-700 hover:from-civic-700 hover:to-civic-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg border border-slate-200 dark:border-slate-700 transition-all duration-200 shadow-sm active:scale-95 disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-civic-600 dark:text-civic-300 font-semibold rounded-lg border-2 border-civic-200 dark:border-civic-700 transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50;
+  }
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95;
   }
   .btn-danger {
-    @apply inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-all duration-200 shadow-sm active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg active:scale-95;
   }
   .card {
-    @apply bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm;
+    @apply bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200;
+  }
+  .card-elevated {
+    @apply bg-white dark:bg-slate-800 rounded-xl shadow-lg dark:shadow-xl border border-slate-100 dark:border-slate-700;
   }
   .input {
-    @apply w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-memphis-500 focus:border-transparent transition-all;
+    @apply w-full px-4 py-2.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-base text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-civic-500 focus:border-civic-500 transition-all;
   }
   .label {
-    @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1;
+    @apply block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2;
   }
   .badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm;
+  }
+  .badge-civic {
+    @apply badge bg-civic-100 text-civic-700 dark:bg-civic-900/40 dark:text-civic-300;
+  }
+  .badge-success {
+    @apply badge bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300;
+  }
+  .badge-warning {
+    @apply badge bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300;
+  }
+  .badge-error {
+    @apply badge bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300;
+  }
+  .section-title {
+    @apply font-display text-3xl font-bold text-civic-900 dark:text-white;
   }
 }
