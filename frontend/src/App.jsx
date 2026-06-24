@@ -19,10 +19,10 @@ import Calendar from './pages/Calendar'
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-memphis-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-slate-500 dark:text-slate-400 text-sm">Loading...</span>
+        <div className="w-10 h-10 border-4 border-civic-500 border-t-transparent rounded-full animate-spin" />
+        <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">Loading...</span>
       </div>
     </div>
   )
