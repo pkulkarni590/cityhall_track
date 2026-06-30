@@ -17,8 +17,11 @@ from routes.report_routes import reports_bp
 from routes.notification_routes import notifications_bp
 
 
+FRONTEND_DIST = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist')
+
+
 def create_app():
-    app = Flask(__name__, static_folder='../frontend/dist', static_url_path='')
+    app = Flask(__name__)
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret')
@@ -48,10 +51,12 @@ def create_app():
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve_frontend(path):
-        if app.static_folder and os.path.exists(os.path.join(app.static_folder, path)):
-            return send_from_directory(app.static_folder, path)
-        if app.static_folder and os.path.exists(os.path.join(app.static_folder, 'index.html')):
-            return send_from_directory(app.static_folder, 'index.html')
+        full_path = os.path.join(FRONTEND_DIST, path)
+        if path and os.path.isfile(full_path):
+            return send_from_directory(FRONTEND_DIST, path)
+        index = os.path.join(FRONTEND_DIST, 'index.html')
+        if os.path.isfile(index):
+            return send_from_directory(FRONTEND_DIST, 'index.html')
         return jsonify({'error': 'Not found'}), 404
 
     @app.errorhandler(404)
