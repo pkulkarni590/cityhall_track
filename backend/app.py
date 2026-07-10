@@ -27,14 +27,22 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=8)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'innovation_memphis.db')
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(__file__), 'innovation_memphis.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
 
     db.init_app(app)
     JWTManager(app)
-    CORS(app, origins=['http://localhost:5173', 'http://localhost:3000'], supports_credentials=True)
+    allowed_origins = ['http://localhost:5173', 'http://localhost:3000']
+    if os.getenv('FRONTEND_ORIGIN'):
+        allowed_origins.append(os.getenv('FRONTEND_ORIGIN'))
+    CORS(app, origins=allowed_origins, supports_credentials=True)
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(projects_bp)
@@ -43,10 +51,6 @@ def create_app():
     app.register_blueprint(documents_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(notifications_bp)
-
-    @app.route('/uploads/<path:filename>')
-    def serve_upload(filename):
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')

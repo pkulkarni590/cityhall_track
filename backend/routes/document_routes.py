@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify, send_file, current_app
+from flask import Blueprint, request, jsonify, Response
 from flask_jwt_extended import jwt_required
-import os, uuid
+import base64
 
 from models import db, Document, Project, ProjectMember
 from auth import get_current_user, log_action, ROLE_HIERARCHY
@@ -52,23 +52,15 @@ def upload_document(project_id):
     if not file.filename or not allowed_file(file.filename):
         return jsonify({'error': 'Invalid file type'}), 400
 
-    ext = file.filename.rsplit('.', 1)[1].lower()
-    unique_name = f"{uuid.uuid4().hex}.{ext}"
-    upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'documents', str(project_id))
-    os.makedirs(upload_folder, exist_ok=True)
-    filepath = os.path.join(upload_folder, unique_name)
-    file.save(filepath)
-
-    file.seek(0, os.SEEK_END)
-    file_size = file.tell()
+    raw = file.read()
 
     doc = Document(
         project_id=project_id,
         name=request.form.get('name', file.filename),
         original_name=file.filename,
-        file_path=f"uploads/documents/{project_id}/{unique_name}",
+        file_data=base64.b64encode(raw).decode('ascii'),
         file_type=file.content_type,
-        file_size=file_size,
+        file_size=len(raw),
         uploaded_by=user.id,
     )
     db.session.add(doc)
@@ -90,10 +82,6 @@ def delete_document(doc_id):
     if ROLE_HIERARCHY.get(user.role, 0) < ROLE_HIERARCHY.get('manager', 0) and doc.uploaded_by != user.id:
         return jsonify({'error': 'Can only delete your own documents'}), 403
 
-    filepath = os.path.join(os.path.dirname(__file__), '..', doc.file_path)
-    if os.path.exists(filepath):
-        os.remove(filepath)
-
     db.session.delete(doc)
     db.session.commit()
 
@@ -110,8 +98,9 @@ def download_document(doc_id):
     if not check_project_access(user, doc.project_id):
         return jsonify({'error': 'Access denied'}), 403
 
-    filepath = os.path.join(os.path.dirname(__file__), '..', doc.file_path)
-    if not os.path.exists(filepath):
-        return jsonify({'error': 'File not found'}), 404
-
-    return send_file(filepath, as_attachment=True, download_name=doc.original_name)
+    raw = base64.b64decode(doc.file_data)
+    return Response(
+        raw,
+        mimetype=doc.file_type or 'application/octet-stream',
+        headers={'Content-Disposition': f'attachment; filename="{doc.original_name}"'},
+    )

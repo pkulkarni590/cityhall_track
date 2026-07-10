@@ -12,7 +12,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='viewer')
-    avatar = db.Column(db.String(500))
+    avatar = db.Column(db.Text)
     title = db.Column(db.String(100))
     department = db.Column(db.String(100))
     phone = db.Column(db.String(50))
@@ -220,7 +220,7 @@ class Document(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
     name = db.Column(db.String(255), nullable=False)
     original_name = db.Column(db.String(255), nullable=False)
-    file_path = db.Column(db.String(500), nullable=False)
+    file_data = db.Column(db.Text, nullable=False)
     file_type = db.Column(db.String(100))
     file_size = db.Column(db.Integer)
     uploaded_by = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -235,7 +235,6 @@ class Document(db.Model):
             'project_id': self.project_id,
             'name': self.name,
             'original_name': self.original_name,
-            'file_path': self.file_path,
             'file_type': self.file_type,
             'file_size': self.file_size,
             'uploaded_by': self.uploaded_by,

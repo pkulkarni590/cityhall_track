@@ -5,7 +5,7 @@ from flask_jwt_extended import (
 )
 from datetime import datetime, timedelta
 import secrets
-import os
+import base64
 
 from models import db, User
 from auth import get_current_user, log_action
@@ -144,18 +144,13 @@ def upload_avatar():
     if not file.filename:
         return jsonify({'error': 'No file selected'}), 400
 
-    allowed = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+    allowed = {'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'gif': 'image/gif', 'webp': 'image/webp'}
     ext = file.filename.rsplit('.', 1)[-1].lower()
     if ext not in allowed:
         return jsonify({'error': 'Invalid file type'}), 400
 
-    upload_folder = os.path.join(os.path.dirname(__file__), '..', 'uploads', 'avatars')
-    os.makedirs(upload_folder, exist_ok=True)
-    filename = f"avatar_{user.id}.{ext}"
-    filepath = os.path.join(upload_folder, filename)
-    file.save(filepath)
-
-    user.avatar = f"/uploads/avatars/{filename}"
+    encoded = base64.b64encode(file.read()).decode('ascii')
+    user.avatar = f"data:{allowed[ext]};base64,{encoded}"
     db.session.commit()
 
     return jsonify({'avatar': user.avatar})
