@@ -44,43 +44,6 @@ def login():
     })
 
 
-@auth_bp.route('/signup', methods=['POST'])
-def signup():
-    data = request.get_json()
-    name = data.get('name', '').strip()
-    email = data.get('email', '').lower().strip()
-    password = data.get('password', '')
-    role = data.get('role', 'viewer')
-
-    if not name or not email or not password:
-        return jsonify({'error': 'Name, email and password required'}), 400
-
-    if len(password) < 8:
-        return jsonify({'error': 'Password must be at least 8 characters'}), 400
-
-    if role not in ['director', 'manager', 'team_member', 'viewer']:
-        return jsonify({'error': 'Invalid role'}), 400
-
-    if User.query.filter_by(email=email).first():
-        return jsonify({'error': 'Email already registered'}), 409
-
-    user = User(name=name, email=email, role=role)
-    user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
-
-    log_action(db, user.id, 'signup', resource_type='user', resource_name=user.email)
-
-    access_token = create_access_token(identity=str(user.id), expires_delta=timedelta(hours=8))
-    refresh_token = create_refresh_token(identity=str(user.id), expires_delta=timedelta(days=30))
-
-    return jsonify({
-        'access_token': access_token,
-        'refresh_token': refresh_token,
-        'user': user.to_dict()
-    }), 201
-
-
 @auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():

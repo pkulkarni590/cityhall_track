@@ -56,18 +56,10 @@ export function AuthProvider({ children }) {
     return data.user
   }
 
-  const signup = async (name, email, password, role) => {
-    const { data } = await client.post('/auth/signup', { name, email, password, role })
-    localStorage.setItem('access_token', data.access_token)
-    localStorage.setItem('refresh_token', data.refresh_token)
-    setUser(data.user)
-    return data.user
-  }
-
   const updateUser = (userData) => setUser(prev => ({ ...prev, ...userData }))
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, updateUser, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, loading }}>
       {children}
     </AuthContext.Provider>
   )
