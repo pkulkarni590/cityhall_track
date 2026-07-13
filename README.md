@@ -31,7 +31,7 @@ A premium, full-stack project management portal built for Innovation Team Memphi
 ### Backend Setup
 
 ```bash
-cd innovation-memphis/backend
+cd innovation-memphis
 
 # Create virtual environment
 python3 -m venv venv
@@ -41,7 +41,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Start the server
-python app.py
+cd backend && python app.py
 ```
 
 Backend runs on **http://localhost:5001**
@@ -93,6 +93,8 @@ On first startup, the backend seeds:
 
 ```
 innovation-memphis/
+├── api/
+│   └── index.py            # Vercel Python Function entrypoint
 ├── backend/
 │   ├── app.py              # Flask app + seed data
 │   ├── models.py           # SQLAlchemy models
@@ -105,8 +107,6 @@ innovation-memphis/
 │   │   ├── document_routes.py
 │   │   ├── report_routes.py
 │   │   └── notification_routes.py
-│   ├── uploads/            # Uploaded files (auto-created)
-│   ├── requirements.txt
 │   └── .env
 ├── frontend/
 │   ├── src/
@@ -116,6 +116,8 @@ innovation-memphis/
 │   │   └── pages/          # Route pages
 │   ├── package.json
 │   └── tailwind.config.js
+├── requirements.txt         # Backend deps (shared by local dev + Vercel)
+├── vercel.json
 └── README.md
 ```
 

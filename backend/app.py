@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta, date
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -15,9 +15,6 @@ from routes.team_routes import team_bp
 from routes.document_routes import documents_bp
 from routes.report_routes import reports_bp
 from routes.notification_routes import notifications_bp
-
-
-FRONTEND_DIST = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'dist')
 
 
 def create_app():
@@ -39,10 +36,7 @@ def create_app():
 
     db.init_app(app)
     JWTManager(app)
-    allowed_origins = ['http://localhost:5173', 'http://localhost:3000']
-    if os.getenv('FRONTEND_ORIGIN'):
-        allowed_origins.append(os.getenv('FRONTEND_ORIGIN'))
-    CORS(app, origins=allowed_origins, supports_credentials=True)
+    CORS(app, origins=['http://localhost:5173', 'http://localhost:3000'], supports_credentials=True)
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(projects_bp)
@@ -51,17 +45,6 @@ def create_app():
     app.register_blueprint(documents_bp)
     app.register_blueprint(reports_bp)
     app.register_blueprint(notifications_bp)
-
-    @app.route('/', defaults={'path': ''})
-    @app.route('/<path:path>')
-    def serve_frontend(path):
-        full_path = os.path.join(FRONTEND_DIST, path)
-        if path and os.path.isfile(full_path):
-            return send_from_directory(FRONTEND_DIST, path)
-        index = os.path.join(FRONTEND_DIST, 'index.html')
-        if os.path.isfile(index):
-            return send_from_directory(FRONTEND_DIST, 'index.html')
-        return jsonify({'error': 'Not found'}), 404
 
     @app.errorhandler(404)
     def not_found(e):
